@@ -1,3 +1,3 @@
 # stat585-lab1_group11
 stat585_lab1
-Make changes using Rstudio
+Make changes using Rstudio 
