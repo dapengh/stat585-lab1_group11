@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Link to our group's repo: https://github.com/dapengh/stat585-lab1_group11.git
 
 ## Deliverable 1
-Failed. 
+class. 
 
 ## Deliverable 2
 Several packages needed to be installed (it's strange there isn't a check in the code that sees if you have the needed libraries, and installs them if not). That was easy to fix. But Gina (other people should chime in) got an error Rcpp.Rmd file. 
