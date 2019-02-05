@@ -24,7 +24,7 @@ Several packages needed to be installed (it's strange there isn't a check in the
 I had an issue in installing a package called "emo". When I was trying to use <tt>`install.package()`<tt>, it says "package ‘emo’ is not available". So I searched it on google and found that "emo" package is not available on cran. I need to install it from github using package <tt>`devtools`<tt>.
 
 
-After I update and install some packages, I have an error: 'err' inherits from 'warning/condition' not 'error_bad_argument'. Execution halted Error in Rscript_render(f, render_args, render_meta): Failed to compile Conditions.Rmd Calls: <Anonymous> -> render_new_session _> Rscript_render Execution halted.
+After I updated and installed some packages, I have an error: 'err' inherits from 'warning/condition' not 'error_bad_argument'. Execution halted Error in Rscript_render(f, render_args, render_meta): Failed to compile Conditions.Rmd Calls: <Anonymous> -> render_new_session _> Rscript_render Execution halted. I decided to quit. But the Next day after I restarted my labtop, I encounter the same error with Dapeng, about the "emo" package. So I used devtools to install "emo" according to his approach. Finally, I get the book! (install.packages("devtools"), devtools::install_github("hadley/emo"))
 
 
 ```{r}
