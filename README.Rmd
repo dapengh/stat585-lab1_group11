@@ -21,3 +21,33 @@ I had an issue in installing a package called "emo". When I was trying to use <t
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+## Brianna response below
+
+## Deliverable (1): what is the last word in chapter 15? - You don't have to answer this question, if things don't work, but please answer the next one and see the next page. --FAILED! Error occured. Did NOT KNIT!
+
+## Deliverable (2): Write a paragraph on the biggest problem you encountered when you were building the book, and how you managed to solve it.
+1st Error: had to install the "bookdown" package
+2nd Error: had to install and update "namespace" package
+3rd Error: had to download/install the "digest" and "RcPP" package
+4th Error: had to install "stringi" package
+5th Error: had to install "backports" package
+6th Error: had to install "lobstr" package
+7th Error: had to install "testthat" package
+## Stack Overflow Example:
+I tried to knitt the README.rmd file but then an error output.See below.
+8th Error: gave a warning message stating: "package 'rlang' was built under R version 3.5.2" so I doubled-clicked the error message to see where the problem occured and ran that chunk of code then deleted a few lines of code that was causing error--probably not the best way to attack this but it worked!
+9th Error: had to install "emo" package but "emo" package was not found under CRAN-- tools>install packages
+
+
+
