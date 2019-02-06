@@ -106,5 +106,43 @@ files[index]
 There are 1218 files inside the gz file. The name of the file containing the teperature data of Fort Dodge is "USH00132999.raw.tavg"
 
 
+Here is an alternative, but very similar method:
+```{r}
+myurl <- "ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn.tavg.latest.raw.tar.gz"
+mytmp <- tempfile()
+download.file(myurl, mytmp)
 
+untar(mytmp)
+files <- as_tibble(list.files("ushcn.v2.5.5.20190204"))
+nrow(files)
+```
 
+There are 1218 files. 
+Do they have Canon City CO?
+
+```{r}
+wea %>%
+  filter(state == "CO") %>%
+  mutate_if(is.character, as.factor) %>%
+  select(name) %>%
+  summary()
+```
+
+Yes they do!
+NOTE: paste(collapse = "-") is cool. 
+
+```{r}
+mycanon <- 
+  wea %>%
+  filter(name == "CANON CITY") %>%
+  select(country, network, ID_placeholder, coop_ID) %>%
+  paste(collapse = "")
+```
+
+Is that file in the things we downloaded?
+```{r}
+files %>%
+  filter(value == paste(mycanon, "raw", "tavg", sep = "."))
+```
+
+Yup, it's in there!
