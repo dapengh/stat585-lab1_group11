@@ -7,17 +7,66 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(maps)
 ```
 
 ## Link to our group's repo: https://github.com/dapengh/stat585-lab1_group11.git
 
 ## Deliverable 1
-Failed. 
+class. 
 
 ## Deliverable 2
 Several packages needed to be installed (it's strange there isn't a check in the code that sees if you have the needed libraries, and installs them if not). That was easy to fix. But Gina (other people should chime in) got an error Rcpp.Rmd file. 
 
 I had an issue in installing a package called "emo". When I was trying to use <tt>`install.package()`<tt>, it says "package ‘emo’ is not available". So I searched it on google and found that "emo" package is not available on cran. I need to install it from github using package <tt>`devtools`<tt>.
+
+
+After I updated and installed some packages, I have an error: 'err' inherits from 'warning/condition' not 'error_bad_argument'. Execution halted Error in Rscript_render(f, render_args, render_meta): Failed to compile Conditions.Rmd Calls: <Anonymous> -> render_new_session _> Rscript_render Execution halted. I decided to quit. But the Next day after I restarted my labtop, I encounter the same error with Dapeng, about the "emo" package. So I used devtools to install "emo" according to his approach. Finally, I get the book! (install.packages("devtools"), devtools::install_github("hadley/emo"))
+
+
+```{r}
+weather <- read_fwf("ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn-v2.5-stations.txt",col_positions = fwf_widths(c(2,1,2,6,9,10,7,3,31,7,7,7,3),col_names = c("COUNTRY CODE ", "NETWORK CODE","ID PLACEHOLDERS (\"00\")","COOP ID", "LATITUDE", "LONGITUDE", "ELEVATION","STATE", "NAME", "COMPONENT 1 (COOP ID)","COMPONENT 2 (COOP ID)","COMPONENT 3 (COOP ID)", "UTC OFFSET")))
+```
+
+The formats of all columns are exactly the intended format.
+
+```{r}
+weather %>% ggplot(aes(x=LONGITUDE,y=LATITUDE)) + geom_point(aes(colour=ELEVATION)) + scale_color_distiller(palette = "OrRd")
+```
+
+Add state information and time zone
+
+```{r}
+states_map <- map_data("state")
+ggplot() + geom_map(data = states_map, map = states_map, aes(map_id=region,fill=factor(region)),color="#2166ac", fill=NA, size=0.5) + geom_point(mapping = aes(LONGITUDE,LATITUDE,colour=ELEVATION),data = weather)+ scale_color_distiller(palette = "OrRd")+theme_classic()
+
+ggplot(data = states_map) + geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") +  coord_quickmap()+ geom_point(mapping = aes(LONGITUDE,LATITUDE,colour=ELEVATION),data = weather)+ scale_color_distiller(palette = "OrRd")+theme_classic()
+```
+
+
+Download .gz file and open with tools available in R.
+
+```{r}
+download.file("ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn.tavg.latest.raw.tar.gz",destfile = "temp")
+untar("temp")
+files <- list.files("ushcn.v2.5.5.20190204")
+```
+
+Check the numer of files inside the file ushcn.tavg.latest.raw.tar.gz and the name of the file containing the temperature data of your home towns or Fort Dodge, IA (please specify).
+
+```{r}
+length(files)
+
+weather %>% filter(grepl("FORT DODGE", weather$NAME)) %>% select(`COUNTRY CODE `,`NETWORK CODE`,"ID PLACEHOLDERS (\"00\")","COOP ID" ) %>% paste(collapse = "") %>% grep(files) -> index
+files[index]
+
+```
+
+There are 1218 files inside the gz file. The name of the file containing the teperature data of Fort Dodge is "USH00132999.raw.tavg"
+
 
 
 
