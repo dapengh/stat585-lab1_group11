@@ -61,7 +61,7 @@ weather %>%
 Add state information and time zone using the maps package. 
 
 ```{r}
-states_map <- map_data("state")
+states_map <- as_tibble(map_data("state"))
 
 ggplot() + 
   geom_map(data = states_map, map = states_map, 
