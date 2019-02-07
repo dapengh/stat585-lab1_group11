@@ -33,13 +33,40 @@ After I updated and installed some packages, I have an error: `'err' inherits fr
 weather <- read_fwf("ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn-v2.5-stations.txt",col_positions = fwf_widths(c(2,1,2,6,9,10,7,3,31,7,7,7,3),col_names = c("COUNTRY CODE ", "NETWORK CODE","ID PLACEHOLDERS (\"00\")","COOP ID", "LATITUDE", "LONGITUDE", "ELEVATION","STATE", "NAME", "COMPONENT 1 (COOP ID)","COMPONENT 2 (COOP ID)","COMPONENT 3 (COOP ID)", "UTC OFFSET")))
 ```
 
-The formats of all columns are exactly the intended format.
+## Weather deliverables
 
-```{r}
-weather %>% ggplot(aes(x=LONGITUDE,y=LATITUDE)) + geom_point(aes(colour=ELEVATION),size=1) + scale_color_gradient(low="turquoise2", high="gold1")
+Download data and familiarize ourselves with read_fwf
+
+Note that the widths and column names are derived from the the weather-readme.txt
+
+```{r message=FALSE}
+weather <- read_fwf("ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn-v2.5-stations.txt",
+                    col_positions = fwf_widths(c(2, 1, 2, 6, 9, 10, 7, 3, 31, 7, 7, 7, 3),
+                                               col_names = c("COUNTRY CODE ", 
+                                                             "NETWORK CODE",
+                                                             "ID PLACEHOLDERS (\"00\")",
+                                                             "COOP ID", 
+                                                             "LATITUDE", 
+                                                             "LONGITUDE", 
+                                                             "ELEVATION",
+                                                             "STATE", 
+                                                             "NAME", 
+                                                             "COMPONENT 1 (COOP ID)",
+                                                             "COMPONENT 2 (COOP ID)",
+                                                             "COMPONENT 3 (COOP ID)", 
+                                                             "UTC OFFSET")))
+
 ```
 
-Add state information and time zone
+The formats of all columns are exactly the intended format. Good job tibble. 
+
+```{r}
+
+weather %>% ggplot(aes(x=LONGITUDE,y=LATITUDE)) + geom_point(aes(colour=ELEVATION),size=1) + scale_color_gradient(low="turquoise2", high="gold1")
+
+```
+
+Add state information and time zone using the maps package. 
 
 ```{r}
 states_map <- map_data("state")
@@ -49,17 +76,16 @@ colnames(state_utc) <- c("long","lat","region","time_zone")
 
 
 ggplot()+ geom_map(data = state_utc, map=states_map, aes(fill=factor(time_zone), map_id = tolower(region))) + geom_map(data = states_map, map = states_map, aes(map_id=region),color="white", fill=NA, size=0.5) + geom_point(mapping = aes(LONGITUDE,LATITUDE,colour=ELEVATION),data=weather,size=1) + scale_color_gradient(low="turquoise2", high="gold1")+theme_classic() + geom_text(mapping = aes(long,lat, label=state),data = state_summ) + geom_label() + labs(fill="UTC OFFSET")
-
-
-
-
 ```
 
+
+## More weather data
 
 Download .gz file and open with tools available in R.
 
 ```{r}
-download.file("ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn.tavg.latest.raw.tar.gz",destfile = "temp")
+download.file("ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn.tavg.latest.raw.tar.gz",
+              destfile = "temp")
 untar("temp")
 files <- list.files("ushcn.v2.5.5.20190204")
 ```
@@ -69,7 +95,11 @@ Check the numer of files inside the file ushcn.tavg.latest.raw.tar.gz and the na
 ```{r}
 length(files)
 
-weather %>% filter(grepl("FORT DODGE", weather$NAME)) %>% select(`COUNTRY CODE `,`NETWORK CODE`,"ID PLACEHOLDERS (\"00\")","COOP ID" ) %>% paste(collapse = "") %>% grep(files) -> index
+weather %>% 
+  filter(grepl("FORT DODGE", weather$NAME)) %>% 
+  select(`COUNTRY CODE `,`NETWORK CODE`,"ID PLACEHOLDERS (\"00\")","COOP ID" ) %>% 
+  paste(collapse = "") %>% grep(files) -> index
+
 files[index]
 
 ```
@@ -77,5 +107,88 @@ files[index]
 There are 1218 files inside the gz file. The name of the file containing the temperature data of Fort Dodge is "USH00132999.raw.tavg"
 
 
+Here is an alternative, but very similar method:
+```{r}
+myurl <- "ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/ushcn.tavg.latest.raw.tar.gz"
+mytmp <- tempfile()
+download.file(myurl, mytmp)
+
+untar(mytmp)
+files <- as_tibble(list.files("ushcn.v2.5.5.20190204"))
+nrow(files)
+```
+
+There are 1218 files. 
+Do they have Canon City CO?
+
+```{r}
+weather %>%
+  filter(STATE == "CO") %>%
+  mutate_if(is.character, as.factor) %>%
+  select(NAME) %>%
+  summary()
+```
+
+Yes they do!
+NOTE: paste(collapse = "-") is cool. 
+
+```{r}
+mycanon <- 
+  weather %>%
+  filter(NAME == "CANON CITY") %>%
+  select("COUNTRY CODE " , "NETWORK CODE", "ID PLACEHOLDERS (\"00\")", "COOP ID") %>%
+  paste(collapse = "")
+```
+
+Is that file in the things we downloaded?
+```{r}
+files %>%
+  filter(value == paste(mycanon, "raw", "tavg", sep = "."))
+```
+
+
+
+
+
+
+
+
+## Brianna's Response to deliverable 1 & 2
+
+Deliverable (1): what is the last word in chapter 15? - You don't have to answer this question, if things don't work, but please answer the next one and see the next page. --FAILED! Error occured. Would NOT KNIT!
+
+Deliverable (2): Write a paragraph on the biggest problem you encountered when you were building the book, and how you managed to solve it.
+
+1st Error: had to install the `bookdown` package
+
+2nd Error: had to install and update `namespace` package
+
+3rd Error: had to download/install the `digest` and `RcPP` package
+
+4th Error: had to install `stringi` package
+
+5th Error: had to install `backports` package
+
+6th Error: had to install `lobstr` package
+
+7th Error: had to install `testthat` package
+
+Stack Overflow Example:
+ 
+I tried to knitt the `README.rmd` file but then an error output.See below.
+
+8th Error: gave a warning message stating: "package `rlang` was built under R version 3.5.2" so I doubled-clicked the error message to see where the problem occured and ran that chunk of code then deleted a few lines of code that was causing error--probably not the best way to attack this but it worked!
+
+9th Error: had to install `emo` package but `emo` package was not found under CRAN-- tools>install packages
+So then I searched online for `emo` package and found Hadley's `emo` repo at: `https://github.com/hadley/emo `
+I followed the directions (below) and inserted the below code where it said my error occured but still no success.
+
+You can install `emo` from github with:
+`install.packages("devtools")`
+`devtools::install_github("hadley/emo")`
+
+10th Error: could not find tools necessary to compile a package
+
+Tried to install Rtools but did not work; still failed to knit `READ.rmd` file
 
 
