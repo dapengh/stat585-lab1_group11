@@ -62,7 +62,10 @@ The formats of all columns are exactly the intended format. Good job tibble.
 
 ```{r}
 
-weather %>% ggplot(aes(x=LONGITUDE,y=LATITUDE)) + geom_point(aes(colour=ELEVATION),size=1) + scale_color_gradient(low="turquoise2", high="gold1")
+weather %>% 
+  ggplot(aes(x=LONGITUDE,y=LATITUDE)) +
+  geom_point(aes(colour=ELEVATION),size=1) + 
+  scale_color_gradient(low="turquoise2", high="gold1")
 
 ```
 
@@ -70,12 +73,29 @@ Add state information and time zone using the maps package.
 
 ```{r}
 states_map <- map_data("state")
-weather %>% group_by(STATE) %>% summarise(state=unique(STATE),long=mean(LONGITUDE),lat=mean(LATITUDE)) -> state_summ
-weather %>% select(LONGITUDE,LATITUDE,STATE,`UTC OFFSET`) %>% mutate(STATE=abbr2state(STATE)) -> state_utc
+
+weather %>% 
+  group_by(STATE) %>% 
+  summarise(state=unique(STATE),long=mean(LONGITUDE),lat=mean(LATITUDE)) -> state_summ
+
+weather %>% 
+  select(LONGITUDE,LATITUDE,STATE,`UTC OFFSET`) %>% 
+  mutate(STATE=abbr2state(STATE)) -> state_utc
+
 colnames(state_utc) <- c("long","lat","region","time_zone")
 
 
-ggplot()+ geom_map(data = state_utc, map=states_map, aes(fill=factor(time_zone), map_id = tolower(region))) + geom_map(data = states_map, map = states_map, aes(map_id=region),color="white", fill=NA, size=0.5) + geom_point(mapping = aes(LONGITUDE,LATITUDE,colour=ELEVATION),data=weather,size=1) + scale_color_gradient(low="turquoise2", high="gold1")+theme_classic() + geom_text(mapping = aes(long,lat, label=state),data = state_summ) + geom_label() + labs(fill="UTC OFFSET")
+ggplot()+ 
+  geom_map(data = state_utc, map=states_map, 
+           aes(fill=factor(time_zone), map_id = tolower(region))) + 
+  geom_map(data = states_map, map = states_map, 
+           aes(map_id=region),color="white", fill=NA, size=0.5) + 
+  geom_point(mapping = aes(LONGITUDE,LATITUDE,colour=ELEVATION),data=weather,size=1) +
+  scale_color_gradient(low="turquoise2", high="gold1")+
+  theme_classic() + 
+  geom_text(mapping = aes(long,lat, label=state),data = state_summ) + 
+  geom_label() + 
+  labs(fill="UTC OFFSET")
 ```
 
 
